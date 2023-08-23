@@ -1,66 +1,67 @@
 name: CI
 on:
+
   push:
-    branches:
-      - devops
+    branches: devops
   pull_request:
-    branches:
-      - devops
+    branches: devops
+
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
-    
-    services:
+
+    services: 
       postgres:
-        image: postgres:latest
-        ports:
-        - 5432:5432
+        image: postgres:12
         env:
-          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        ports: ['5432:5432']
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: Set up Ruby 2.7.1
-        uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1.80.0
         with:
           ruby-version: 2.7.1
-      - name: Cache Ruby gems
-        uses: actions/cache@v2
+
+      - uses: Borales/actions-yarn@v2.3.0
         with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
-      - name: Install dependencies
+          cmd: install
+
+      - name: Install Dependencies
         run: |
+          sudo apt install -yqq libpq-dev
           gem install bundler
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
-          gem install selenium-webdriver -v 4.9.0
-          bundle update rspec-rails
-      - name: Install postgres client
-        run: sudo apt-get install libpq-dev
-        
-      - name: Set environment variables
+
+      - name: Install Gems
         run: |
-          echo "POSTGRES_USER=postgres" >> $GITHUB_ENV
-          echo "POSTGRES_PASSWORD=postgres" >> $GITHUB_ENV
+          bundle install
+
+      - name: Setup database
         env:
-          GITHUB_ENV: $GITHUB_ENV
-      - name: setup databases
+          PG_DATABASE: oms_api_development
+          PG_HOST: localhost
+          PG_USER: postgres
+          PG_PASSWORD: postgres
+          RAILS_ENV: test
+          WITH_COVERAGE: true
+          DISABLE_SPRING: 1
+        run: |
+          bundle exec rails db:prepare
+          bundle exec rake test
+
+      - name: Build and test with rspec
         env:
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          PG_DATABASE: oms_api_test
+          PG_HOST: localhost
+          PG_USER: postgres
+          PG_PASSWORD: postgres
           RAILS_ENV: test
         run: |
-          bundle exec rake db:create
-          bundle exec rake db:migrate
-       
-      # - name: Build the Docker image # push The image to the docker hub
-      #   run: docker build . --file Dockerfile --tag hureradevsinc/rails-app:${{ steps.date.outputs.date }}
-      
-    
-       
+          bundle exec rspec spec
+
+      - name: Create Coverage Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage
+          path: coverage/
