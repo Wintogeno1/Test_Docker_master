@@ -1,0 +1,36 @@
+name: Ruby on Rails CI
+
+on:
+  push:
+    branches:
+      - devops
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    services:
+      db:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: oms_api_development
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+    
+    - name: Build and Run Docker Compose
+      run: |
+        docker-compose build
+        docker-compose up -d db
+        docker-compose run --rm web bundle exec rake db:create db:migrate
+        
+    - name: Run Tests
+      run: |
+        docker-compose run --rm web bundle exec rspec # Use the appropriate command to run tests
+        
+    - name: Stop and Remove Docker Containers
+      run: docker-compose down
