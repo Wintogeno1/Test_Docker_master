@@ -56,7 +56,8 @@ jobs:
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
           RAILS_ENV: test
         run: |
-          bundle exec rake db:setup
+          bundle exec rake db:create
+          bundle exec rake db:migrate
           
       - name: Run tests 
         run: |
