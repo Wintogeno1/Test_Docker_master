@@ -1,36 +1,86 @@
-name: Ruby on Rails CI
-
+name: CI
 on:
   push:
     branches:
       - devops
-
+  pull_request:
+    branches:
+      - devops
 jobs:
-  build:
-    name: Build and Test
+  build-and-test:
     runs-on: ubuntu-latest
     
     services:
-      db:
-        image: postgres:13
+      postgres:
+        image: postgres:latest
+        ports:
+        - 5432:5432
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: oms_api_development
-
+          options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-    
-    - name: Build and Run Docker Compose
-      run: |
-        docker-compose build
-        docker-compose up -d db
-        docker-compose run --rm web bundle exec rake db:create db:migrate
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Ruby 2.7.1
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.1
+      - name: Cache Ruby gems
+        uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
+          gem install selenium-webdriver -v 4.9.0
+          bundle update rspec-rails
+      - name: Install postgres client
+        run: sudo apt-get install libpq-dev
         
-    - name: Run Tests
-      run: |
-        docker-compose run --rm web bundle exec rspec # Use the appropriate command to run tests
+      - name: Set environment variables
+        run: |
+          echo "POSTGRES_USER=postgres" >> $GITHUB_ENV
+          echo "POSTGRES_PASSWORD=postgres" >> $GITHUB_ENV
+        env:
+          GITHUB_ENV: $GITHUB_ENV
+      - name: setup databases
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          RAILS_ENV: test
+        run: |
+          bundle exec rake db:setup
+          
+      - name: Run tests 
+        run: |
+          bundle exec rspec
+  build-and-push:
+    needs: build-and-test
+    if: ${{ needs.build-and-test.result == 'success' }} # Only run if the test job was successful
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: docker login
+        run: | 
+          docker login -u wintogeno -p Malikmuneeb123@
+          
+      # - name: Get current date # get the date of the build
+      #   id: date
+      #   run: echo "::set-output name=date::$(date +'%Y-%m-%d--%M-%S')"
         
-    - name: Stop and Remove Docker Containers
-      run: docker-compose down
+      # - name: Build the Docker image # push The image to the docker hub
+      #   run: docker build . --file Dockerfile --tag hureradevsinc/rails-app:${{ steps.date.outputs.date }}
+      
+      - name: Build the Docker image # push The image to the docker hub
+        run: docker build . --file Dockerfile --tag wintogeno/docker_aws:latest
+        
+      - name: Docker Push
+        run: docker push wintogeno/docker_aws:latest
