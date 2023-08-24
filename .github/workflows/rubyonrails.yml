@@ -72,15 +72,10 @@ jobs:
         run: | 
           docker login -u wintogeno -p Malikmuneeb123@
           
-      # - name: Get current date # get the date of the build
-      #   id: date
-      #   run: echo "::set-output name=date::$(date +'%Y-%m-%d--%M-%S')"
-        
-      # - name: Build the Docker image # push The image to the docker hub
-      #   run: docker build . --file Dockerfile --tag hureradevsinc/rails-app:${{ steps.date.outputs.date }}
+     
       
       - name: Build the Docker image # push The image to the docker hub
-        run: docker build . --file Dockerfile --tag wintogeno/docker_aws:latest
+        run: docker build . --file dockerfile --tag wintogeno/docker_aws:latest
         
       - name: Docker Push
-        run: docker push  wintogeno/docker_aws:tagname
+        run: docker push  wintogeno/docker_aws:latest
