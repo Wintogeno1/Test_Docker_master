@@ -83,4 +83,4 @@ jobs:
         run: docker build . --file Dockerfile --tag wintogeno/docker_aws:latest
         
       - name: Docker Push
-        run: docker push push wintogeno/docker_aws:tagname
+        run: docker push  wintogeno/docker_aws:tagname
