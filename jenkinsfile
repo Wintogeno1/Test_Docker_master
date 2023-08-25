@@ -1,0 +1,18 @@
+node {
+    def remote = [:]
+    remote.name = 'jenkins2'
+    remote.host = '65.2.177.89' // Replace with your EC2 instance IP
+    remote.user = 'ec2-user' // Replace with your EC2 instance user
+    // remote.identityFile = credentials('EC2_S3SH_KEY_ID') // Replace with your Jenkins credential ID for the EC2 SSH key
+    remote.allowAnyHosts = true
+    stage('Connect to EC2') {
+        sshCommand remote: remote, command: '''
+            touch text2.txt
+        '''
+    }
+    stage('Install and Pull Docker Image') {
+        sshCommand remote: remote, command: '''
+            docker pull postgres:latest
+        '''
+    }
+}
