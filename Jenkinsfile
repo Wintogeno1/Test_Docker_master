@@ -1,21 +1,15 @@
 pipeline {
     agent any
-
-    environment {
-        EC2_INSTANCE_IP = '65.2.177.89'
-        SSH_CREDENTIALS_ID = 'ec2-user@ec2-65-2-177-89'
-    }
-
     stages {
-        stage('Connect to EC2') {
+        stage("Aws Demo") {
             steps {
-                script {
-                    def sshKey = credentials("${SSH_CREDENTIALS_ID}")
-                    
-                    sshCommand remote: "${EC2_INSTANCE_IP}",
-                               user: 'ec2-user',  // Update with your instance's username
-                               key: sshKey,
-                               command: 'echo "Connected to EC2 instance"'
+                withCredentials([[
+                $class: 'AmazonWebServicesCredentialsBinding',
+                credentialsId:'43.205.120.43',
+                accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']])
+                {
+                    sh "aws ec2 start-instances --instance-ids i-0a1f0c25c3572717d --region=ap-south-1"
                 }
             }
         }
