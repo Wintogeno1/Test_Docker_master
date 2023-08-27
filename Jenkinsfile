@@ -18,8 +18,7 @@ pipeline {
             steps {
                 script
                 {
-                %sudo   ALL=(ALL:ALL) ALL
-                jenkins ALL=(ALL) NOPASSWD: ALL    
+                
                 sh 'yum update -y'
                 sh 'amazon-linux-extras install docker -y'
                 sh 'service docker start'
