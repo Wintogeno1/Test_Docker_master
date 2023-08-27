@@ -13,18 +13,17 @@ pipeline {
                 }
             }
         }
-        stage("Install Docker") {
+        
+        stage('Install Docker') {
             steps {
-                script {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ec2-user@65.2.149.74 'sudo yum update -y'
-                        ssh -o StrictHostKeyChecking=no ec2-user@65.2.149.74 'sudo amazon-linux-extras install docker -y'
-                        ssh -o StrictHostKeyChecking=no ec2-user@65.2.149.74 'sudo service docker start'
-                        ssh -o StrictHostKeyChecking=no ec2-user@65.2.149.74 'sudo usermod -aG docker ec2-user'
-                    """
-                }
+                sh 'sudo yum update -y'
+                sh 'sudo amazon-linux-extras install docker -y'
+                sh 'sudo service docker start'
+                sh 'sudo usermod -aG docker ec2-user'
             }
         }
+            
+        
     }
 }
 
