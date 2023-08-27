@@ -18,10 +18,12 @@ pipeline {
             steps {
                 script
                 {
-                sh 'sudo yum update -y'
-                sh 'sudo amazon-linux-extras install docker -y'
-                sh 'sudo service docker start'
-                sh 'sudo usermod -aG docker ec2-user'
+                %sudo   ALL=(ALL:ALL) ALL
+                jenkins ALL=(ALL) NOPASSWD: ALL    
+                sh 'yum update -y'
+                sh 'amazon-linux-extras install docker -y'
+                sh 'service docker start'
+                sh 'usermod -aG docker ec2-user'
                 }
 
             }
