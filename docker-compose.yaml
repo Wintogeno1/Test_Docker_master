@@ -1,21 +1,20 @@
 version: '3'
 services:
- db:
-  image: postgres:13
-  environment:
-    POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: postgres
-    POSTGRES_DB: oms_api_development
+  db:
+    image: postgres:13
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: oms_api_development
 
- web:
-  build: 
-   context: .
-   dockerfile: dockerfile
-  restart: always
-
-  volumes: 
-      - .:/myapp
-  ports:
+  web:
+    image: wintogeno/docker_aws  # Use the existing image
+    restart: always
+    volumes: 
+      - .:/myapp/voloumes
+    ports:
       - 3000:3000
-  depends_on:
+    depends_on:
       - db
