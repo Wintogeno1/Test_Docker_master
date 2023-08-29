@@ -34,3 +34,20 @@
 
 
 /.terraform
+
+
+# Terraform
+/*.tfstate
+/*.tfstate.backup
+*.backup
+*.tfplan
+terraform.log
+.terraformrc
+.terraformrc.json
+.terraform.lock.hcl
+*.pem
+*.key
+*.crt
+*.tfvars
+.env
+.DS_Store

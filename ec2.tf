@@ -18,7 +18,9 @@ data "aws_ami" "amazon-linux-2" {
 
 
 resource "aws_instance" "jenkins" {
-  ami             = data.aws_ami.amazon-linux-2.id
+  # ami             = data.aws_ami.amazon-linux-2.id
+  ami             = "ami-036fcf8080bce5f54"
+
   instance_type   = "t2.micro"
   security_groups = [aws_security_group.jenkins-sg.name]
   key_name        = "Ec2tutorial"
@@ -43,6 +45,37 @@ resource "aws_instance" "jenkins" {
   }
   tags = {
     "Name" = "Jenkins1"
+  }
+}
+
+resource "aws_instance" "Ruby_Rails_Deployment" {
+  # ami             = data.aws_ami.amazon-linux-2.id
+  ami             = "ami-036fcf8080bce5f54"
+
+  instance_type   = "t2.micro"
+  security_groups = [aws_security_group.rubyrails-sg.name]
+  key_name        = "Ec2tutorial"
+  provisioner "remote-exec" {
+    inline = [
+      "sudo yum update",
+      "sudo yum install docker -y",
+     
+      "wget https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) ",
+      "sudo mv docker-compose-$(uname -s)-$(uname -m) /usr/local/bin/docker-compose",
+      "sudo chmod -v +x /usr/local/bin/docker-compose"
+     
+     
+    ]
+  }
+  
+  connection {
+    type        = "ssh"
+    host        = self.public_ip
+    user        = "ec2-user"
+    private_key = file("/home/muneeb/Downloads/Ec2tutorial.pem")
+  }
+  tags = {
+    "Name" = "Ruby-onrails"
   }
 }
 
