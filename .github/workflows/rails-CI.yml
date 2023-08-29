@@ -1,0 +1,78 @@
+name: Continous Integeration
+on:
+  push:
+    branches:
+      - devops2
+  pull_request:
+    branches:
+      - devops2
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+        - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Ruby 2.7.1
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.1
+      - name: Cache Ruby gems
+        uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
+          gem install selenium-webdriver -v 4.9.0
+          bundle update rspec-rails
+      - name: Install postgres client
+        run: sudo apt-get install libpq-dev
+        
+      - name: Set environment variables
+        run: |
+          echo "POSTGRES_USER=postgres" >> $GITHUB_ENV
+          echo "POSTGRES_PASSWORD=postgres" >> $GITHUB_ENV
+        env:
+          GITHUB_ENV: $GITHUB_ENV
+      # - name: setup databases
+      #   env:
+      #     POSTGRES_USER: ${{ env.POSTGRES_USER }}
+      #     POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+      #     RAILS_ENV: test
+      #   run: |
+      #     bundle exec rake db:setup
+          
+  build-and-push:
+    needs: build-and-test
+    if: ${{ needs.build-and-test.result == 'success' }} # Only run if the test job was successful
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: docker login
+        run: | 
+          docker login -u wintogeno -p Malikmuneeb123@
+          
+     
+      
+      - name: Build the Docker image # push The image to the docker hub
+        run: docker build . --file dockerfile --tag wintogeno/docker_aws:latest
+        
+      - name: Docker Push
+        run: docker push  wintogeno/docker_aws:latest
