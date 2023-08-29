@@ -1,0 +1,35 @@
+# Ignore common files
+.dockerignore
+.git/
+.gitignore
+.vscode/
+*.log
+*.tmp
+
+# Ignore Terraform related files and directories
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfplan
+terraform.log
+.terraformrc
+.terraformrc.json
+.terraform.lock.hcl
+*.pem
+*.key
+*.crt
+*.tfvars
+.env
+.DS_Store
+*.tf
+
+
+
+# Ignore GitHub Actions related files
+.github/workflows/
+.github/actions/
+.github/PULL_REQUEST_TEMPLATE.md
+.github/ISSUE_TEMPLATE/
+
+# Ignore Jenkins related files
+Jenkinsfile
