@@ -2,11 +2,7 @@ node {
     stage('Update EC2') {
         def remoteCommands = '''
             
-           docker pull postgres:13
            docker pull wintogeno/docker_aws:latest
-           
-           cd /home/ec2-user/rails_application
-           docker-compose up
 
         '''
 
