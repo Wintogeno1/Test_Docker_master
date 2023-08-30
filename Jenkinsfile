@@ -3,6 +3,8 @@ node {
         def remoteCommands = '''
             
            docker pull wintogeno/docker_aws:latest
+           
+
 
         '''
 
