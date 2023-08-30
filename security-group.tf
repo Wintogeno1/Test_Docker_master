@@ -7,7 +7,7 @@ variable "my_ip" {
 
 variable "Jenkins_ip" {
   description ="Ec2 jenkins public ip address"
-  default= "43.205.127.255/32"
+  default= "13.127.224.251/32"
   
 }
 
