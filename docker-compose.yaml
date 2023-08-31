@@ -20,3 +20,6 @@ services:
       - db
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db/oms_api_development
+volumes:
+  db_data:
+
