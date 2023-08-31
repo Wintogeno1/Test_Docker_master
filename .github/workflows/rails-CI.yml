@@ -2,10 +2,10 @@ name: Continous Integeration
 on:
   push:
     branches:
-      - devops2
+      - devops
   pull_request:
     branches:
-      - devops2
+      - devops
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -58,6 +58,9 @@ jobs:
       #   run: |
       #     bundle exec rake db:setup
           
+      # - name: Run tests 
+      #   run: |
+      #     bundle exec rspec
   build-and-push:
     needs: build-and-test
     if: ${{ needs.build-and-test.result == 'success' }} # Only run if the test job was successful
@@ -67,10 +70,8 @@ jobs:
       
       - name: docker login
         run: | 
-          docker login -u wintogeno -p Malikmuneeb123@
+          docker login -u  ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           
-     
-      
       - name: Build the Docker image # push The image to the docker hub
         run: docker build . --file dockerfile --tag wintogeno/docker_aws:latest
         
