@@ -70,10 +70,8 @@ jobs:
       
       - name: docker login
         run: | 
-          docker login -u wintogeno -p {{secrets.DOCKER_PASSWORD}}
+          docker login -u  ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           
-     
-      
       - name: Build the Docker image # push The image to the docker hub
         run: docker build . --file dockerfile --tag wintogeno/docker_aws:latest
         
