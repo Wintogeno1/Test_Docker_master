@@ -1,11 +1,12 @@
 node {
     stage('Update EC2') {
         def remoteCommands = '''
-           cd /home/ec2-user/rails_application
+           cd rails_application
            docker-compose down
            docker rmi  wintogeno/docker_aws:latest
            docker pull wintogeno/docker_aws:latest
-           docker-compose up
+           docker-compose up -d 
+           echo "Execuation Successful"
            
 
 
