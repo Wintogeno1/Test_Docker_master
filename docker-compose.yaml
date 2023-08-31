@@ -3,7 +3,7 @@ services:
   db:
     image: postgres:14.1
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data1
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

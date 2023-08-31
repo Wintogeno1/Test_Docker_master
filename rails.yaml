@@ -70,7 +70,7 @@ jobs:
       
       - name: docker login
         run: | 
-          docker login -u wintogeno -p Malikmuneeb123@
+          docker login -u wintogeno -p {{secrets.DOCKER_PASSWORD}}
           
      
       
