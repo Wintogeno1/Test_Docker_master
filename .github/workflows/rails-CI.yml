@@ -12,7 +12,7 @@ jobs:
     
     services:
       postgres:
-        image: postgres:latest
+        image: postgres:14.1
         ports:
         - 5432:5432
         env:
@@ -73,7 +73,7 @@ jobs:
           docker login -u  ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           
       - name: Build the Docker image # push The image to the docker hub
-        run: docker build . --file dockerfile --tag wintogeno/docker_aws:latest
+        run: docker build . --file .Dockerfiles/dockerfile --tag wintogeno/docker_aws:latest
         
       - name: Docker Push
         run: docker push  wintogeno/docker_aws:latest
