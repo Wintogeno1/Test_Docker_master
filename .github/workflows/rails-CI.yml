@@ -2,10 +2,10 @@ name: Continous Integeration
 on:
   push:
     branches:
-      - devops
+      - devops2
   pull_request:
     branches:
-      - devops
+      - devops2
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
