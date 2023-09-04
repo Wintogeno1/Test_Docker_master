@@ -33,10 +33,11 @@
 *.DS_Store
 
 
-/.terraform
+/.Terraform
 
 
 # Terraform
+/terraform/.terraform
 /*.tfstate
 /*.tfstate.backup
 *.backup
