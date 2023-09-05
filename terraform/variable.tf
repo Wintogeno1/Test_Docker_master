@@ -35,11 +35,6 @@ variable "security_group_name_prefix-jenkins" {
   default     = "Jenkins-sg"
 }
 
-variable "ingress_ports_specific" {
-  default = 22
-
-  
-}
 
 
 variable "ports_https" {
@@ -47,9 +42,39 @@ variable "ports_https" {
   
 }
 
+variable "ingress_ports_specific" {
+  type = list(object({
+    description = string
+    port        = number
+  }))
+  default = [
+    {
+      description = "Allows SSH access"
+      port        = 22
+    },
+    {
+      description = "Allows HTTP traffic"
+      port        = 80
+    },
+    {
+      description = "Allows HTTPS traffic"
+      port        = 443
+    }
+  ]
+}
+
 variable "egress_ports" {
-  default = 0
+  type = list(object({
+    description = string
+    port        = number
+  }))
+  default = [
+    {
+      description = "Allows SSH access"
+      port        = 0
   
+    }
+  ]
 }
 variable "port_http" {
 

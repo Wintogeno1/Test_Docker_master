@@ -6,29 +6,21 @@ resource "aws_security_group" "this" {
     for_each = var.ingress_ports_specific
     content {
       protocol    = "tcp"
-      from_port   = ingress.value
-      to_port     = ingress.value
+      from_port   = ingress.value.port
+      to_port     = ingress.value.port
       cidr_blocks = var.cidr_blocks
+      description =ingress.value.description
     }
   }
 
-  dynamic "ingress" {
-    for_each = var.ingress_ports_open
-    content {
-      protocol    = "tcp"
-      from_port   = ingress.value
-      to_port     = ingress.value
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  }
 
   dynamic "egress" {
     for_each = var.egress_ports
     content {
       protocol    = "-1"
-      from_port   = egress.value
-      to_port     = egress.value
-      cidr_blocks = ["0.0.0.0/0"]
+      from_port   = egress.value.port
+      to_port     = egress.value.port
+      cidr_blocks = var.cidr_blocks
     }
   }
 
