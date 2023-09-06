@@ -4,7 +4,7 @@ module "jenkins_security_group" {
   tag_name               = var.security_group_name_prefix-jenkins
   description            = "inbound ports for ssh and standard http and everything outbound"
   ingress_ports_specific = var.ingress_ports_specific
-  ingress_ports_open     = [var.port_http, var.ports_https]
+  ingress_ports_open     = var.ingress_ports_open
   egress_ports           = var.egress_ports
   cidr_blocks            = [var.your_ip]
 }
@@ -15,7 +15,7 @@ module "rails_security_group" {
   tag_name               = var.security_group_name_prefix-rails
   description            = "Rails Security Group"
   ingress_ports_specific = var.ingress_ports_specific
-  ingress_ports_open     = [var.port_http, var.ports_https]
+  ingress_ports_open     = var.ingress_ports_open
   egress_ports           = var.egress_ports
   cidr_blocks            = [var.your_ip, var.jenkins_ip]
 }

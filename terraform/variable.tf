@@ -16,7 +16,7 @@ variable "aws_profile" {
 
 variable "your_ip" {
   description = "Your public IP address"
-  default = "39.41.9.64/32"
+  default = "206.84.191.189/32"
 }
 
 variable "jenkins_ip" {
@@ -51,8 +51,28 @@ variable "ingress_ports_specific" {
     {
       description = "Allows SSH access"
       port        = 22
-    },
+    }
+    # {
+    #   description = "Allows HTTP traffic"
+    #   port        = 80
+    # },
+    # {
+    #   description = "Allows HTTPS traffic"
+    #   port        = 443
+    # }
+  ]
+}
+
+
+
+variable "ingress_ports_open" {
+  type = list(object({
+    description = string
+    port        = number
+  }))
+  default = [
     {
+    
       description = "Allows HTTP traffic"
       port        = 80
     },
@@ -62,6 +82,7 @@ variable "ingress_ports_specific" {
     }
   ]
 }
+
 
 variable "egress_ports" {
   type = list(object({

@@ -18,8 +18,10 @@ variable "ingress_ports_specific" {
  
 }
 variable "ingress_ports_open" {
-  description = "List of ingress ports open for all IPs"
-  type        = list(number)
+    type = list(object({
+    description = string
+    port        = number
+    }))
 }
 variable "egress_ports" {
 type = list(object({
